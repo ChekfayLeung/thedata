@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="85f932b3-01e8-421e-89a0-5d65b38cc7e2" name="Default Changelist" comment="" />
+    <list default="true" id="85f932b3-01e8-421e-89a0-5d65b38cc7e2" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ICD编码.docx" beforeDir="false" afterPath="$PROJECT_DIR$/it/ICD编码.docx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/a.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/getdate.py" beforeDir="false" afterPath="$PROJECT_DIR$/getdate.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/icd.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/it/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/it/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/merge-DESKTOP-LHSA799.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/merge.py" beforeDir="false" afterPath="$PROJECT_DIR$/merge.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -17,13 +27,18 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="ProjectId" id="1RzlwwUArd07X0t0Q6cdqsA7Tiu" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="run.code.analysis.last.selected.profile" value="aDefault" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
@@ -37,11 +52,11 @@
     <option name="myShowDebugConsoleByDefault" value="true" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\leung\OneDrive\PycharmProjects\thedata" />
+    <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\leung\OneDrive\PycharmProjects\thedata\it" />
     </key>
-    <key name="MoveFile.RECENT_KEYS">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\leung\OneDrive\PycharmProjects\thedata" />
       <recent name="C:\Users\leung\OneDrive\PycharmProjects\thedata\it" />
     </key>
   </component>
@@ -169,14 +184,26 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="253" y="123" key="SettingsEditor" timestamp="1575603206675">
+    <state x="389" y="0" key="CommitChangelistDialog2" timestamp="1575727407871">
       <screen x="0" y="0" width="1500" height="960" />
     </state>
-    <state x="253" y="123" key="SettingsEditor/0.0.1500.960@0.0.1500.960" timestamp="1575603206675" />
-    <state x="435" y="305" key="com.intellij.ide.util.TipDialog" timestamp="1575603285545">
+    <state x="389" y="0" key="CommitChangelistDialog2/0.0.1500.960@0.0.1500.960" timestamp="1575727407871" />
+    <state x="531" y="235" key="FileChooserDialogImpl" timestamp="1575700110379">
       <screen x="0" y="0" width="1500" height="960" />
     </state>
-    <state x="435" y="305" key="com.intellij.ide.util.TipDialog/0.0.1500.960@0.0.1500.960" timestamp="1575603285545" />
+    <state x="531" y="235" key="FileChooserDialogImpl/0.0.1500.960@0.0.1500.960" timestamp="1575700110379" />
+    <state x="253" y="123" key="SettingsEditor" timestamp="1575688998114">
+      <screen x="0" y="0" width="1500" height="960" />
+    </state>
+    <state x="253" y="123" key="SettingsEditor/0.0.1500.960@0.0.1500.960" timestamp="1575688998114" />
+    <state x="343" y="209" key="Vcs.Push.Dialog.v2" timestamp="1575689404263">
+      <screen x="0" y="0" width="1500" height="960" />
+    </state>
+    <state x="343" y="209" key="Vcs.Push.Dialog.v2/0.0.1500.960@0.0.1500.960" timestamp="1575689404263" />
+    <state x="435" y="305" key="com.intellij.ide.util.TipDialog" timestamp="1575698566728">
+      <screen x="0" y="0" width="1500" height="960" />
+    </state>
+    <state x="435" y="305" key="com.intellij.ide.util.TipDialog/0.0.1500.960@0.0.1500.960" timestamp="1575698566728" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
