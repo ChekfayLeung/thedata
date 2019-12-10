@@ -100,15 +100,15 @@ def FuzzyMatchDisease(disease):
                 r1 = 'NOT_MATCHED'
                 sc = 0
                 result1 = pd.concat([result1, pd.DataFrame({'r1': [r1], 'sc': [sc]})])
-                # r1 = 'NOT_MATCHED'
-            # result1.append(r1)
-        # result1.sort_values('sc',ascending=False,inplace=True)
         try:return result1['r1'].values[0] #KeyError:'r1'
         except KeyError:
             print(result1)
             return "KeyError"
         except IndexError: return "NOT_MATCHED"
     elif isinstance(disease, str) and disease != '':
+        icd = pd.read_json(
+            "{}\\it\\cancer.json".format(os.getcwd())) if any([x in disease for x in list("癌瘤")]) else pd.read_json(
+            "{}\\it\\icdnc.json".format(os.getcwd()))
         try:
             r1 = process.extractBests(disease, list(icd.loc[:, '诊断名称']), limit=1,
                                       score_cutoff=cutoff, scorer=fuzz.token_sort_ratio)[0][0]
