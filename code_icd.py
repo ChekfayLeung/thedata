@@ -6,10 +6,13 @@ if __name__ =="__main__":
     print("编码中")
     if True:
         cwd = os.getcwd()
-        data = pd.read_csv("{}/cache.csv".format(cwd))
-        data.reset_index(drop=True).to_csv("{}/cache.csv".format(cwd), date_format='%Y/%m/%d', index=False)
-        data.loc[data.eval("age<=1"), "disease"] = data.loc[data.eval("age<=1"), "disease"]. \
-            apply(lambda x: "儿%s" % str(x) if all([len(str(x)) >= 3, len(re.findall("[儿围产]", str(x))) == 0]) else x)
+        data = pd.read_csv("./cache.csv")
+        try:
+            data.loc[data.eval("age<=1"), "disease"] = data.loc[data.eval("age<=1"), "disease"]. \
+                apply(lambda x: "儿%s" % str(x) if all([len(str(x)) >= 3, len(re.findall("[儿围产]", str(x))) == 0]) else x)
+        except:
+            pass
+        data = pd.DataFrame(data.pop("disease"))
         data.rename(columns={"disease": "疾病名称"}, inplace=True)
         data = data.loc[:, ["疾病名称"]]
         data.dropna(subset=['疾病名称'], axis=0, inplace=True)  # 第一步去除空白

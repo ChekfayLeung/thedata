@@ -187,8 +187,10 @@ def main():
             from it.icd import resubs, fuzzit, clean_diag, has_icd
             cwd = os.getcwd()
             data.reset_index(drop=True).to_csv("{}/cache.csv".format(cwd), date_format='%Y/%m/%d', index=False)
-            os.system("code_icd.py")
+            del data
+            os.system("python code_icd.py")
             result = pd.read_csv("./cache.csv")
+            os.system("rm ./cache.csv")
             for file in files:
                 data = pd.read_csv(file)
                 data = pd.merge(data, result[['疾病名称', 'match', 'icd']], how="left", left_on="disease",
