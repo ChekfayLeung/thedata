@@ -17,7 +17,7 @@ if __name__ =="__main__":
         data = data.loc[:, ["疾病名称"]]
         data.dropna(subset=['疾病名称'], axis=0, inplace=True)  # 第一步去除空白
         data['疾病名称'] = data['疾病名称'].apply(resubs)  # 清理没有的情况
-        data = pd.DataFrame({'疾病名称': pd.Categorical(data['疾病名称']).categories})  # 将诊断名称化为分类变量减少计算量
+        data = pd.DataFrame({'疾病名称': pd.Categorical(data['疾病名称']).categories})  # 将诊断名称化为分类变量减少计算量 
         result = [pd.merge(data,
                            pd.read_json("{}\\it\\icd.json".format(cwd)).dropna(axis='rows', subset=['icd'])
                            # .reset_index().drop('index',axis=1))
