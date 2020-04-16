@@ -1,11 +1,11 @@
 import pandas as pd, numpy as np;from numba import vectorize
-from tqdm import tqdm, tnrange, tqdm_notebook
+from tqdm import tqdm, tnrange, tqdm_notebook;import tkinter as tk, tkinter.filedialog as tkf
 from it.data_clean import *;
 from multiprocessing import Pool
 from it import *;from datetime import datetime
 
 
-@vectorize(['float32(float32, float32)'], target='cuda')
+#@vectorize(['float32(float32, float32)'], target='cuda')
 def minus(qua,qub):
     return qua-qub
 
@@ -30,7 +30,8 @@ def count_interval(hp_name):
 if __name__=='__main__':
     try:data = pd.read_csv("/D/data/read.csv")
     except:
-        data = pd.read_csv("/D/data/merge_coded.csv")
+        with tk.Tk() as TK:
+            data = pd.read_csv(tkf.askopenfilename())
         # data['inday']=data.inday.apply(standarizedate)
         data.dropna(subset=['inday', 'age', 'id', 'hp_name', 'hc'])
         data = data[data.id.notna()]
@@ -41,7 +42,7 @@ if __name__=='__main__':
             lambda x: pd.Timestamp.to_julian_date(x) if isinstance(x, datetime) else np.nan)
         data['age'] = data.age.apply(age_cut)
         data.sort_values(['inday'], inplace=True)
-        data['read'] = data.duplicated(['id', 'age', 'hp_name'])
+        data['read'] = data.duplicated(['id', 'age', 'hp_name'],keep=False)
         data['read_time'] = 0
         data['process']=0
         data = data[['inday', 'id', 'hp_name', "read", 'read_time','process']]

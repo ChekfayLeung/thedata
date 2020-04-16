@@ -141,16 +141,14 @@ def read_file(filepath):
                                                       date_format='%Y/%m/%d', index=False)
         print("存在问题的数据:{}条".format(data.eval("CHECK!=''").count()))
         dire = "\\".join(re.split("[\\/]", filepath)[:-1])
-        afile()
-        f = open("{}\\log.txt".format(cwd), 'a+')
-        f.write(open("{}\\{}log.txt""".format(dire, re.split("[\\\/\.]", filepath)[-2]), "r").read())
-        f.close()
+        # afile()
+        # f = open("{}\\log.txt".format(cwd), 'a+')
+        # f.write(open("{}\\{}log.txt""".format(dire, re.split("[\\\/\.]", filepath)[-2]), "r").read())
+        # f.close()
         del data
 
 def main():
     import pandas as pd, tkinter.filedialog as tkf, sys, os, re, numpy as np, tkinter as tk, multiprocessing
-    from it.data_clean import *
-    from it import *;
     from multiprocessing import Pool;from tqdm import tqdm
     cwd = os.getcwd()
     f = open("{}\log.txt".format(cwd), 'w+')

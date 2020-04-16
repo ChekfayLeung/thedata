@@ -1,3 +1,4 @@
+from warnings import showwarning
 def testthe(data):
     """测试总费用的准确性"""
     data=data.copy()
@@ -21,9 +22,9 @@ def testthe(data):
     #data.loc[t == False, '费用检查'] += "药物费用核算错误或未明细；"
     data.loc[t == False, '费用检查'] += "药物费用核算错误；"
     if not all(data.eval("费用检查==''")):
-        print("费用检查:未通过")
+        pass# print("费用检查:未通过")
     else:
-        print("费用检查:通过")
+        pass# print("费用检查:通过")
     data.loc[data['费用检查'] == '', '费用检查'] = '检查通过'
     return data['费用检查']
 
@@ -72,7 +73,7 @@ def testint(data):
             else:
                 intg = True
         if not intg:
-            print("data missing some columns: {}".format(missing))
+            pass# print("data missing some columns: {}".format(missing))
         else:
             intg=True
         return data[['患者编号', '年龄', '出生日期', '性别', '疾病名称', 'ICD-10编码', '就诊日期', '就诊科室',
@@ -142,7 +143,7 @@ def testintold(data):
             else:
                 intg = True
         if not intg:
-            print("data missing some columns: {}".format(missing))
+            pass# print("data missing some columns: {}".format(missing))
         else:
             intg=True
             #print("Passed")
@@ -151,9 +152,9 @@ def testintold(data):
                     '其他费', '医保统筹支付', "医保账户支付", '自付费用']]
     else:
         intg = False
-        print("data missing some columns: {}".format(['病人ID', '性别', '年龄', '出生日期', '诊断名称', '诊病时间', '科室名称',
-                '总费用', '药品费', '西药费', '中成药费', '中草药费', '挂号费', '诊察费', '检查费', '治疗费', '手术费', '化验费',
-                '其他费', '医保统筹支付', "医保账户支付", '自付费用']))
+        pass# print("data missing some columns: {}".format(['病人ID', '性别', '年龄', '出生日期', '诊断名称', '诊病时间', '科室名称',
+        #         '总费用', '药品费', '西药费', '中成药费', '中草药费', '挂号费', '诊察费', '检查费', '治疗费', '手术费', '化验费',
+        #         '其他费', '医保统筹支付', "医保账户支付", '自付费用']))
         return data
 
 
@@ -162,7 +163,7 @@ def testicd(data):
     """测试icd是否完成"""
     icd = data['诊断代码'].isna()
     if False in icd:
-        print("NaN in data")
+        pass# print("NaN in data")
 
 
 def standarizedate(date):
@@ -306,9 +307,9 @@ def get_age(data):
         data['age'] = data['age']
     try:
         data['age'] = data['age'].astype("float")
-        print("转化成功")
+        # print("转化成功")
     except:
-        print('转化失败')
+        pass# print('转化失败')
 
 
 
@@ -329,9 +330,9 @@ def get_in(data):
         data['inpatient'] = "there aren't any data available for age calculation"
     try:
         data['inpatient'] = data['inpatient'].astype("float")
-        print("转化成功")
+        # print("转化成功")
     except ValueError:
-        print('转化失败')
+        pass# print('转化失败')
 
 
 def test_gender(data):
@@ -356,9 +357,10 @@ def standarizegender(data):
         data.loc[data.eval("sex==@f"),"sex"] = "1"
     data.loc[data.eval("sex!='1' and sex!='2'"), "sex"] = '不支持的数据格式'
     if test_gender(data):
-        print('性别:标准化成功')
+        pass
+        # print('性别:标准化成功')
     else:
-        print("性别:标准化失败")
+        pass# print("性别:标准化失败")
 
 def insurance(input):
     import numpy as np
@@ -383,31 +385,31 @@ def insurance(input):
 
 def cleanit(data):
     data = testint(data)
-    print("通过")
+    # print("通过")
     if intg == True:
         data['费用核算']=testthe(data)  # 检查费用核算是否准确
     else:
-        return print("数据完成/格式出错")
+        pass# print("数据完成/格式出错")
     try:
         data['就诊日期'] = data['就诊日期'].apply(standarizedate)
-        print("就诊日期: 标准化成功")
-    except:print("就诊日期: 标准化出错")
+        # print("就诊日期: 标准化成功")
+    except:pass# print("就诊日期: 标准化出错")
     try:
         data['出生日期'] = data['出生日期'].apply(standarizedate)
-        print("出生日期: 标准化成功")
-    except:print("出生日期: 标准化失败")
+        # print("出生日期: 标准化成功")
+    except:pass# print("出生日期: 标准化失败")
     try:
         data['住院日期']=data['住院日期'].apply(standarizedate)
         data['出院日期']=data['出院日期'].apply(standarizedate)
         get_in(data)
     except:pass
-    try:data['insurance']=data['参保类型'].apply(insurance);print("参保类型：提取成功")
-    except:print("参保类型：提取失败")
-    print("年龄：",end="")
+    try:data['insurance']=data['参保类型'].apply(insurance);pass# print("参保类型：提取成功")
+    except:pass# print("参保类型：提取失败")
+    pass# print("年龄：",end="")
     get_age(data)
     standarizegender(data)
     for var, name in zip(['age', 'gender', '参保类型'], ['年龄', '性别', '参保类型']):
-        if any(data[var].isna()): print("{}:存在缺失数据".format(name))
+        if any(data[var].isna()): pass# print("{}:存在缺失数据".format(name))
     return data
 
 
