@@ -4,7 +4,7 @@ if __name__ =="__main__":
     import time, os, sys, requests,re;from tqdm import tqdm
     from it.icd import resubs, fuzzit, clean_diag, has_icd
     print("编码中")
-    with tqdm(total=6) as pbar:
+    with tqdm(total=7) as pbar:
         cwd = os.getcwd()
         i = 0
         try:
@@ -109,7 +109,7 @@ if __name__ =="__main__":
         result = pd.concat([result, results], sort=True)
         result = result.drop_duplicates('疾病名称').reset_index(drop=True)
         if signal:
-            with tqdm(total=5) as pbar:
+            with tqdm(total=6) as pbar:
                 i=1
                 if ".csv" in file:
                     data = pd.read_csv(file)
@@ -131,12 +131,15 @@ if __name__ =="__main__":
                 pbar.update(i);i+=1
                 data.loc[:, 'icd'].fillna("NOT_MATCHED", inplace=True)
                 try:
+                    if "CHECK" not in data.columns:data['CHECK']=None
                     data.loc[ data['icd10'].apply(lambda x: str(x).upper()[:3]) != data['icd'].apply(
                         lambda x: str(x).upper()[:3]),
                     "CHECK"] += "icd编码错误"
                 except:pass
                 pbar.update(i);i+=1
-                data.to_csv(re.sub("\.csv", ".csv", file), date_format="%Y/%m/%d", index=False)
+                data.to_csv(re.sub("\.\W{2:}", ".csv", file), date_format="%Y/%m/%d", index=False)
+                try:_ = pd.read_csv(re.sub("\.\W{2:}", ".csv", file))
+                except: TK=tk.TK();data.to_csv(tkf.asksaveasfilename(), date_format="%Y/%m/%d", index=False);TK.destroy()
                 pbar.update(i);i+=1
         else:result.to_csv("./cache.csv")
         del result, Threads
