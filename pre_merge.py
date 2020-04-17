@@ -162,7 +162,7 @@ def main():
     if True:
         with Pool(5) as p,tqdm(total=len(filepaths)) as pbar:
             for i,_ in enumerate(p.imap_unordered(read_file,filepaths)):
-                pbar.update(i)
+                pbar.update()
         data = pd.DataFrame(columns=
                             ['id', 'age', 'sex', "birthday", 'inday', 'outday', 'stayday', 'dept1', 'dept2',
                              'disease',
@@ -182,6 +182,8 @@ def main():
             data = pd.concat([data, pd.read_csv(file)], sort=False)
         data.reset_index(drop=True, inplace=True)
         data.to_csv("%s.csv" % path,index=False,date_format="%Y%m%d")
+
+
 if __name__=="__main__":
     main()
     sys.exit(0)
