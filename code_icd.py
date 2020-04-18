@@ -1,8 +1,13 @@
-if __name__ =="__main__":
-    from it.icd import *;from it.data_clean import *;from it import *
-    import pandas as pd, numpy as np, os, sys, tkinter.filedialog as tkf, tkinter as tk
-    import time, os, sys, requests,re;from tqdm import tqdm
-    from it.icd import resubs, fuzzit, clean_diag, has_icd
+from it.icd import *;
+from it.data_clean import *;
+from it import *
+import pandas as pd, numpy as np, os, sys, tkinter.filedialog as tkf, tkinter as tk
+import time, os, sys, requests, re, multiprocessing;
+from tqdm import tqdm;
+# from it.icd import resubs, fuzzit, clean_diag, has_icd, FuzzyMatchDisease
+
+def read():
+    global data,result,data1,results,signal,file
     print("编码中")
     with tqdm(total=7) as pbar:
         cwd = os.getcwd()
@@ -63,76 +68,104 @@ if __name__ =="__main__":
         data = pd.DataFrame({"diag": data.loc[:, "diag"].drop_duplicates().reset_index(drop=True)})
         result = [[]]
         pbar.update()
-        print("\n第二步:数据处理，时间较长请耐性等待，程序占用较多资源，电脑可能会发生卡顿等情况\n")
-        if len(data) > 0:  # 模拟匹配
-            processnum = 6
-            r1 = [0 + i * len(data) // processnum for i in range(processnum)]
-            r2 = [(i + 1) * len(data) // processnum for i in range(processnum)]
-            Threads = []
-            queue = multiprocessing.Queue()
-            for i in range(processnum):
-                p = fuzzit(data, r1[i], r2[i], queue)
-                p.start()
-                Threads.append(p)
-            i = 0
-            no_alive = False
-            while len(result) < (len(Threads) + 1):
-                i += 1
-                print(
-                    '\rProcessing...{0}% {1}'.format(len(result) * 100 // (len(Threads) + 1),
-                                                     ['\\', '|', '/', '—'][i % 4]),
-                    end='')
-                try:
+
+
+def code(method="pool"):
+    global data,result,results,Threads,data1
+    # >>>icd Fuzzymatch<<<
+    print("\n第二步:数据处理，时间较长请耐性等待，程序占用较多资源，电脑可能会发生卡顿等情况\n")
+    # >>>icd Fuzzymatch<<<
+    if method.lower() == "pool":
+        with multiprocessing.Pool(7) as p, tqdm(len(data)) as pbar:
+            for i, r in enumerate(p.imap(FuzzyMatchDisease, data.diag.values)):
+                data.loc[i, 'match'] = r
+                pbar.update()
+    # >>>try if Using Pool would be faster
+    elif method.lower() == "process" and len(data) > 0:  # 模拟匹配
+        processnum = 6
+        r1 = [0 + i * len(data) // processnum for i in range(processnum)]
+        r2 = [(i + 1) * len(data) // processnum for i in range(processnum)]
+        Threads = []
+        queue = multiprocessing.Queue()
+        for i in range(processnum):
+            p = fuzzit(data, r1[i], r2[i], queue)
+            p.start()
+            Threads.append(p)
+        i = 0
+        no_alive = False
+        while len(result) < (len(Threads) + 1):
+            i += 1
+            print(
+                '\rProcessing...{0}% {1}'.format(len(result) * 100 // (len(Threads) + 1),
+                                                 ['\\', '|', '/', '—'][i % 4]),
+                end='')
+            try:
+                result.append(queue.get(block=False))
+                if any([p.is_alive() for p in Threads]):
+                    pass
+                else:
+                    no_alive = [p.is_alive() for p in Threads]
                     result.append(queue.get(block=False))
-                    if any([p.is_alive() for p in Threads]):
-                        pass
-                    else:
-                        no_alive = [p.is_alive() for p in Threads]
-                        result.append(queue.get(block=False))
-                        break
-                except multiprocessing.queues.Empty:
-                    pass  # print('\rno data...',end='')
-                time.sleep(3)
-            print('\rProcessing...{0}% {1}'.format(100, ['\\', '|', '/', '—'][i % 4]), end='')
-            for p in Threads:
-                p.join()
-        else:
-            Threads = []
-        result = pd.merge(data1, pd.concat(result[1:], sort=True), how="left")
-        result = pd.concat([result, results], sort=True)
-        result = result.drop_duplicates('疾病名称').reset_index(drop=True)
-        if signal:
-            with tqdm(total=6) as pbar:
-                if ".csv" in file:
-                    data = pd.read_csv(file)
-                elif ".dta" in file:
-                    data = pd.read_stata(file)
-                pbar.update()
-                data = pd.merge(data, result[['疾病名称', 'match', 'icd']], how="left", left_on="disease",
-                                right_on="疾病名称")  # 还要将icd的也搬出来
-                data = pd.concat([data[data['icd'].notna()],
-                                  pd.merge(data[data['icd'].isna()],  # 将没有icd的补全icd
-                                           pd.read_json("{}/it/icd.json".format(cwd)).dropna(axis='rows',
-                                                                                             subset=['icd'])
-                                           , how='left', left_on="match", right_on='诊断名称') \
-                                 # .drop(["诊断名称_y","icd_x"], axis=1)
-                                 # .rename({'诊断名称_x': '诊断名称',"icd_y":"icd"}, axis=1)])\
-                                 .drop(["诊断名称", "icd_x"], axis=1)
-                                 .rename({"icd_y": "icd"}, axis=1)]) \
-                    .reset_index(drop=True)
-                pbar.update()
-                data.loc[:, 'icd'].fillna("NOT_MATCHED", inplace=True)
-                try:
-                    if "CHECK" not in data.columns:data['CHECK']=''
-                    data.loc[ data['icd10'].apply(lambda x: str(x).upper()[:3]) != data['icd'].apply(
-                        lambda x: str(x).upper()[:3]),
-                    "CHECK"] += "icd编码错误"
-                    data["CHECK"] = data.CHECK.apply(lambda x: None if x == '' else x)
-                except:pass
-                pbar.update()
-                data.to_csv(re.sub("\.\w{2,}", "_code.csv", file), date_format="%Y/%m/%d", index=False)
-                try:_ = pd.read_csv(re.sub("\.\w{2,}", ".csv", file))
-                except: TK=tk.TK();data.to_csv(tkf.asksaveasfilename(), date_format="%Y/%m/%d", index=False);TK.destroy()
-                pbar.update()
-        else:result.to_csv("./cache.csv")
-        del result, Threads
+                    break
+            except multiprocessing.queues.Empty:
+                pass  # print('\rno data...',end='')
+            time.sleep(3)
+        print('\rProcessing...{0}% {1}'.format(100, ['\\', '|', '/', '—'][i % 4]), end='')
+        for p in Threads:
+            p.join()
+    else:
+        Threads = []
+    result = pd.merge(data1, pd.concat(result[1:], sort=True), how="left")
+    result = pd.concat([result, results], sort=True)
+    result = result.drop_duplicates('疾病名称').reset_index(drop=True)
+
+
+def save():
+    if signal:
+        with tqdm(total=6) as pbar:
+            if ".csv" in file:
+                data = pd.read_csv(file)
+            elif ".dta" in file:
+                data = pd.read_stata(file)
+            pbar.update()
+            data = pd.merge(data, result[['疾病名称', 'match', 'icd']], how="left", left_on="disease",
+                            right_on="疾病名称")  # 还要将icd的也搬出来
+            data = pd.concat([data[data['icd'].notna()],
+                              pd.merge(data[data['icd'].isna()],  # 将没有icd的补全icd
+                                       pd.read_json("{}/it/icd.json".format(cwd)).dropna(axis='rows',
+                                                                                         subset=['icd'])
+                                       , how='left', left_on="match", right_on='诊断名称') \
+                             # .drop(["诊断名称_y","icd_x"], axis=1)
+                             # .rename({'诊断名称_x': '诊断名称',"icd_y":"icd"}, axis=1)])\
+                             .drop(["诊断名称", "icd_x"], axis=1)
+                             .rename({"icd_y": "icd"}, axis=1)]) \
+                .reset_index(drop=True)
+            pbar.update()
+            data.loc[:, 'icd'].fillna("NOT_MATCHED", inplace=True)
+            try:
+                if "CHECK" not in data.columns: data['CHECK'] = ''
+                data.loc[data['icd10'].apply(lambda x: str(x).upper()[:3]) != data['icd'].apply(
+                    lambda x: str(x).upper()[:3]),
+                         "CHECK"] += "icd编码错误"
+                data["CHECK"] = data.CHECK.apply(lambda x: None if x == '' else x)
+            except:
+                pass
+            pbar.update()
+            data.to_csv(re.sub("\.\w{2,}", "_code.csv", file), date_format="%Y/%m/%d", index=False)
+            try:
+                _ = pd.read_csv(re.sub("\.\w{2,}", ".csv", file))
+            except:
+                TK = tk.TK();data.to_csv(tkf.asksaveasfilename(), date_format="%Y/%m/%d", index=False);TK.destroy()
+            pbar.update()
+    else:result.to_csv("./cache.csv")
+    del result, Threads
+
+def main():
+    read()
+    code("pool")
+    save()
+
+
+if __name__ =="__main__":
+    main()
+    sys.exit(0)

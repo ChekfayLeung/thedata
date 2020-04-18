@@ -14,7 +14,7 @@ def run(id):
     if len(qu) > 1:
         qub = np.asarray(np.append(qu.inday, [np.nan]), dtype=np.float32)
         qua = np.asarray(np.append([np.nan], qu.inday), dtype=np.float32)
-        return qu['index'].values,np.abs(minus(qua,qub))[:len(qu)]
+        return qu['index'].values, np.abs(minus(qua, qub))[:len(qu)]
         # data.loc[qu.index, 'read_time'] = np.abs(minus(qua,qub))[:len(qu)]
         # del qua, qub, qu
 
@@ -35,8 +35,9 @@ def main():
             lambda x: pd.Timestamp.to_julian_date(x) if isinstance(x, datetime) else np.nan)
         data['age'] = data.age.apply(age_cut)
         data.sort_values(['inday'], inplace=True)
-        data['read'] = data.duplicated(['id', 'age', 'hp_name'],keep=False)
-        data['read_time'] = 0
+        data['read'] = 0
+        data.loc[data.duplicated(['id', 'age', 'hp_name'],keep=False),'read']+=1
+        data['read_time'] = np.nan
         data['process']=0
         data = data[['inday', 'id', 'hp_name', "read", 'read_time','process']]
     hp = list(pd.Categorical(data.hp_name).categories)
@@ -44,14 +45,15 @@ def main():
         if any(data.query("hp_name==@hp_name and process==1").index):continue
         print(hp.index(hp_name), "-", len(hp), ':', hp_name)
         with Pool(6) as p:
-            max_ = len(data.query("hp_name==@hp_name"))//2 + 1
-            with tqdm(total=max_) as pbar:
+            max_ = list(pd.Categorical(data.query('hp_name==@hp_name and read==1').id).categories)
+            with tqdm(total=len(max_)+1) as pbar:
                 for i, r in enumerate(p.imap_unordered(
-                        run, list(pd.Categorical(data.query('hp_name==@hp_name and read==True').id).categories))):
-                    try:ind,qu = r
+                        run, max_)):
+                    try:
+                        ind,qu = r
+                        data.loc[ind,"read_time"] = qu; del ind, qu
+                        pbar.update()
                     except:pbar.update();continue
-                    data.loc[ind,"read_time"] = qu; del ind, qu
-                    pbar.update()
                 data.loc[data.query("hp_name==@hp_name").index,'process']=1
                 data.to_csv("/D/data/read.csv",index=False,date_format="%Y%m%d")
                 pbar.update()
