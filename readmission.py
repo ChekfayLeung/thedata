@@ -20,7 +20,7 @@ def run(id):
 
 def main():
     global data, hp_name
-    try:data = pd.read_csv("/D/data/read.csv")
+    try:data = pd.read_csv("./read.csv");print("Restore process...")
     except:
         TK= tk.Tk()
         data = pd.read_csv(tkf.askopenfilename())
@@ -55,9 +55,12 @@ def main():
                         pbar.update()
                     except:pbar.update();continue
                 data.loc[data.query("hp_name==@hp_name").index,'process']=1
-                data.to_csv("/D/data/read.csv",index=False,date_format="%Y%m%d")
+                data.to_csv("./read.csv",index=False,date_format="%Y%m%d")
                 pbar.update()
-    data.to_csv("/D/data/merge_coded_read.csv",index=False,date_format="%Y%m%d")
+    TK = tk.Tk()
+    data.to_csv(tkf.asksaveasfilename(), index=False, date_format="%Y%m%d")
+    TK.destroy()
+
 
 
 if __name__=='__main__':

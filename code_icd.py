@@ -7,7 +7,7 @@ from tqdm import tqdm;
 # from it.icd import resubs, fuzzit, clean_diag, has_icd, FuzzyMatchDisease
 
 def read():
-    global data,result,data1,results,signal,file
+    global data,result,data1,results,signal,file,cwd
     print("编码中")
     with tqdm(total=7) as pbar:
         cwd = os.getcwd()
@@ -80,6 +80,7 @@ def code(method="pool"):
             for i, r in enumerate(p.imap(FuzzyMatchDisease, data.diag.values)):
                 data.loc[i, 'match'] = r
                 pbar.update()
+        result = pd.concat([data, results], sort=True)
     # >>>try if Using Pool would be faster
     elif method.lower() == "process" and len(data) > 0:  # 模拟匹配
         processnum = 6
@@ -113,11 +114,12 @@ def code(method="pool"):
         print('\rProcessing...{0}% {1}'.format(100, ['\\', '|', '/', '—'][i % 4]), end='')
         for p in Threads:
             p.join()
+        result = pd.merge(data1, pd.concat(result[1:], sort=True), how="left")
+        result = pd.concat([result, results], sort=True)
     else:
         Threads = []
-    result = pd.merge(data1, pd.concat(result[1:], sort=True), how="left")
-    result = pd.concat([result, results], sort=True)
     result = result.drop_duplicates('疾病名称').reset_index(drop=True)
+
 
 
 def save():
@@ -141,7 +143,7 @@ def save():
                              .rename({"icd_y": "icd"}, axis=1)]) \
                 .reset_index(drop=True)
             pbar.update()
-            data.loc[:, 'icd'].fillna("NOT_MATCHED", inplace=True)
+            data.loc[:, 'icd'].fillna("_NOT_MATCHED", inplace=True)
             try:
                 if "CHECK" not in data.columns: data['CHECK'] = ''
                 data.loc[data['icd10'].apply(lambda x: str(x).upper()[:3]) != data['icd'].apply(

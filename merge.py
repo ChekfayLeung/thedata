@@ -204,7 +204,7 @@ def main():
                                  .drop(["诊断名称", "icd_x"], axis=1)
                                  .rename({"icd_y": "icd"}, axis=1)]) \
                     .reset_index(drop=True)
-                data.loc[:, 'icd'].fillna("NOT_MATCHED", inplace=True)
+                data.loc[:, 'icd'].fillna("_NOT_MATCHED", inplace=True)
                 data.loc[
                     data['icd10'].apply(lambda x: str(x).upper()[:3]) != data['icd'].apply(
                         lambda x: str(x).upper()[:3]),
