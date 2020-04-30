@@ -80,7 +80,8 @@ def code(method="pool"):
             for i, r in enumerate(p.imap(FuzzyMatchDisease, data.diag.values)):
                 data.loc[i, 'match'] = r
                 pbar.update()
-        result = pd.concat([data, results], sort=True)
+        result = pd.concat([data,data1],sort=True)
+        result = pd.concat([result, results], sort=True)
     # >>>try if Using Pool would be faster
     elif method.lower() == "process" and len(data) > 0:  # 模拟匹配
         processnum = 6
