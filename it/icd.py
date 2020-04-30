@@ -200,7 +200,7 @@ def clean_diag(case,keep=1):
         else:
             if len(re.findall("(?<!\w)[（(].{5,}[）)](?!\w)",case))==1:pass
             else:case=re.sub("[（(].{5,}[）)]",'',case)
-        case = re.sub(r"\w*?[查原]因[待查]{0,2}.?(?=\w)",'',case)
+        case = re.sub(r"\w*?[查原]因[待查]{0,2}\W+(?=\w)",'',case)
         case = re.sub(r'^[a-z]{3,}', '', case)
         case = re.sub(r"慢\w?病\w?药|[CTLS腰椎胸尾]\d+",'',case)
         if case.find("待查")!=-1 and len(case)<3: return "待查"
@@ -215,10 +215,10 @@ def clean_diag(case,keep=1):
         case = re.sub(r"[0-9]+[周天月年时]\s?","",case)
         case = re.sub(r"\d+类|NOS|中医：|化疗|左|右|双侧|上段|下段|职业|待查|部|[轻重中][症型]", '', case)
         case = re.sub(r'[\[\]()\-（）【】]', '', case)
-        case = re.sub(r"[\s/?？\+，,]|(?!混联重)[合并伴继]", ';', case)
+        case = re.sub(r"[\s/?？\+，,]|(?!混联重愈)[合并伴继]", ';', case)
         case = re.findall(r"\w+", case)
-        if len(re.findall("(\w+?[炎症癌瘤压病染])(?![病并合继毒伴])",case[0]))>1:
-            case[0]=re.findall("(\w+?[炎症癌瘤压病染痛])(?![病并合继毒疼])",case[0])[0]
+        if len(re.findall("(\w+?[炎症癌瘤压病染痛])(?![病并合继毒疼型性])",case[0]))>1:
+            case[0]=re.findall("(\w+?[炎症癌瘤压病染痛])(?![病并合继毒疼型性])",case[0])[0]
         if len(case) == 0: return ''
         while not re.findall(r"[a-zA-Z\u4e00-\u9fa5]+", case[0]):
             if len(case) == 1: return ''

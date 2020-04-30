@@ -76,7 +76,7 @@ def code(method="pool"):
     print("\n第二步:数据处理，时间较长请耐性等待，程序占用较多资源，电脑可能会发生卡顿等情况\n")
     # >>>icd Fuzzymatch<<<
     if method.lower() == "pool":
-        with multiprocessing.Pool(7) as p, tqdm(len(data)) as pbar:
+        with multiprocessing.Pool(os.cpu_count()-1) as p, tqdm(len(data)) as pbar:
             for i, r in enumerate(p.imap(FuzzyMatchDisease, data.diag.values)):
                 data.loc[i, 'match'] = r
                 pbar.update()
@@ -146,6 +146,9 @@ def save():
             pbar.update()
             data.loc[:, 'icd'].fillna("_NOT_MATCHED", inplace=True)
             try:
+                data.loc[data.eval("icd=='_NOT_MATCHED"),'icd']=data.loc[data.eval("icd=='_NOT_MATCHED"),'icd10']+data.loc[data.eval("icd=='_NOT_MATCHED"),'icd']
+            except:pass
+            try:
                 if "CHECK" not in data.columns: data['CHECK'] = ''
                 data.loc[data['icd10'].apply(lambda x: str(x).upper()[:3]) != data['icd'].apply(
                     lambda x: str(x).upper()[:3]),
@@ -154,11 +157,7 @@ def save():
             except:
                 pass
             pbar.update()
-            data.to_csv(re.sub("\.\w{2,}", "_code.csv", file), date_format="%Y/%m/%d", index=False)
-            try:
-                _ = pd.read_csv(re.sub("\.\w{2,}", ".csv", file))
-            except:
-                TK = tk.TK();data.to_csv(tkf.asksaveasfilename(), date_format="%Y/%m/%d", index=False);TK.destroy()
+            TK = tk.TK();data.to_csv(tkf.asksaveasfilename(), date_format="%Y/%m/%d", index=False);TK.destroy()
             pbar.update()
     else:result.to_csv("./cache.csv")
     del result, Threads
