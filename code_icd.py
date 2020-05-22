@@ -70,7 +70,7 @@ def read():
         pbar.update()
 
 
-def code(method="pool"):
+def code(method='process' if sys.platform.lower() in ["windows","window",'win32','amd64','win64'] else 'pool'):
     global data,result,results,Threads,data1
     # >>>icd Fuzzymatch<<<
     print("\n第二步:数据处理，时间较长请耐性等待，程序占用较多资源，电脑可能会发生卡顿等情况\n")
@@ -164,7 +164,7 @@ def save():
 
 def main():
     read()
-    code("pool")
+    code()
     save()
 
 
