@@ -93,8 +93,10 @@ if __name__ == "__main__":
         elif 'txt' in file:data=pd.read_csv(file)
         elif 'xls' in file:data=pd.read_xlsx(file)
         data=data.rename(columns={'agency_name':'hp_name'})
-        data[data.eval('hp_type+hc+level').isna()]['level'] = data[data.eval('hp_type+hc+level').isna()][
-            'hp_name'].apply(level)
+        try:
+            data[data.eval('hp_type+hc+level').isna()]['level'] = data[data.eval('hp_type+hc+level').isna()][
+                'hp_name'].apply(level)
+        except:data['level']=data.hp_name.apply(level)
         if all(['hp_type' in data.columns, 'hc' in data.columns]):
             try:
                 try:data.hp_type = data.hp_type.astype('float')
@@ -162,7 +164,7 @@ if __name__ == "__main__":
             os.system('clear')
     # os.system(
     #     "echo {} has {} pieces of data >> {}/log.txt".format(list(os.path.split(file))[0], t, savepath))
-    if all(t1,t2):
+    if all([t1,t2]):
         savefiles = [x for x in list(os.listdir(savepath)) if "_split" in x]
         hp_t = hp_t2 #清理基层去了专业病的问题
         for savefile in tqdm([x for x in savefiles if '专' in x]):
